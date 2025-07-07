@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+.poppins-force {
+  font-family: 'Poppins', Helvetica, sans-serif !important;
+}
