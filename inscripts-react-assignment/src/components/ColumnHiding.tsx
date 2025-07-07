@@ -1,8 +1,8 @@
 // This file uses 'react-table' which may not have type declarations. See project README for details.
 import React, { useMemo } from 'react';
-import { useTable, Column } from 'react-table';
+import { useTable,} from 'react-table';
 import MOCK_DATA from './MOCK_DATA.ts';
-import { COLUMNS } from './columns.ts';
+import { COLUMNS } from './columns';
 import './table.css';
 import Checkbox from './Checkbox';
 

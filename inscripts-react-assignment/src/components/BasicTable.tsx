@@ -1,6 +1,6 @@
 // This file uses 'react-table' which may not have type declarations. See project README for details.
 import React, { useMemo, useRef, useState } from 'react';
-import { useTable, Column } from 'react-table';
+import { useTable} from 'react-table';
 import type { RowData } from '../types';
 import MOCK_DATA from './MOCK_DATA.ts';
 import { COLUMNS } from './columns.ts';
@@ -8,6 +8,7 @@ import './table.css';
 import assignedImg from '../assets/assigned.png'
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
 
 const DOWN_ARROW = (
   <svg style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)' }} width="12" height="12" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -39,7 +40,8 @@ export const BasicTable: React.FC = () => {
     return result as RowData[];
   }, []);
 
-  const columns = useMemo<Column<RowData>[]>(() => COLUMNS, []);
+  
+  const columns = useMemo(() => COLUMNS, []);
 
   const {
     getTableProps,
@@ -47,7 +49,7 @@ export const BasicTable: React.FC = () => {
     headerGroups,
     rows,
     prepareRow
-  } = useTable({
+  } = (useTable as any)({
     columns,
     data
   });
@@ -81,12 +83,13 @@ export const BasicTable: React.FC = () => {
           {headerGroups.map((headerGroup: unknown, groupIdx: number) => {
             const typedHeaderGroup = headerGroup as unknown;
             return (
-              <tr {...typedHeaderGroup.getHeaderGroupProps()}>
-                {typedHeaderGroup.headers.map((column: unknown, colIdx: number) => {
-                  const typedColumn = column as Column<RowData>;
+              <tr {...(typedHeaderGroup as any).getHeaderGroupProps()}>
+                {(typedHeaderGroup as any).headers.map((column: unknown, colIdx: number) => {
+                  const typedColumn = column as any;
+
                   const isSelected = selectedCol === colIdx;
-                  const isResizable = colIdx < typedHeaderGroup.headers.length - 4;
-                  const isLastCol = colIdx === typedHeaderGroup.headers.length - 1;
+                  const isResizable = colIdx < (typedHeaderGroup as any).headers.length - 4;
+                  const isLastCol = colIdx === (typedHeaderGroup as any).headers.length - 1;
                   // Check if this is the Financial overview parent header (contains job request, submitted, status, submitter)
                   const isFinancialOverviewParent = typedColumn.Header === 'Financial overview';
                   // Check if this is the URL parent header (empty header that contains URL column)
@@ -767,7 +770,7 @@ export const BasicTable: React.FC = () => {
                           )}
                         </span>
                         {/* Down arrow except last four columns */}
-                        {typedColumn.downArrow && colIdx < typedHeaderGroup.headers.length - 4 && (
+                        {(typedColumn as any).downArrow && colIdx < (typedHeaderGroup as any).headers.length - 4 && (
                           <span
                             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', cursor: 'pointer' }}
                             onClick={e => {
@@ -791,18 +794,18 @@ export const BasicTable: React.FC = () => {
             const typedRow = row as unknown;
             prepareRow(typedRow);
             return (
-              <tr {...typedRow.getRowProps()}>
-                {typedRow.cells.map((cell: unknown, colIdx: number) => {
+              <tr {...(typedRow  as any).getRowProps()}>
+                {(typedRow  as any).cells.map((cell: unknown, colIdx: number) => {
                   const typedCell = cell as unknown;
-                  const isLastCol = colIdx === typedRow.cells.length - 1;
+                  const isLastCol = colIdx === (typedRow  as any).cells.length - 1;
                   const isColSelected = selectedCol === colIdx;
-                  const cellProps = typedCell.getCellProps();
+                  const cellProps = (typedCell as any).getCellProps();
                   const { key, ...restCellProps } = cellProps;
                   const tdStyle = {
-                    background: selectedCol !== null && isColSelected && typedRow.index !== 0 ? '#e5e7eb' : undefined,
+                    background: selectedCol !== null && isColSelected && (typedRow  as any).index !== 0 ? '#e5e7eb' : undefined,
                     borderLeft: isLastCol ? '2px dashed #aaa' : (isColSelected ? '2px solid #4b9ce2' : undefined),
                     borderRight: isLastCol ? '2px dashed #aaa' : (isColSelected ? '2px solid #4b9ce2' : undefined),
-                    width: colWidths[colIdx] || typedRow.cells[colIdx].column.width || 120,
+                    width: colWidths[colIdx] || (typedRow  as any).cells[colIdx].column.width || 120,
                     height: 32,
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -810,25 +813,25 @@ export const BasicTable: React.FC = () => {
                     cursor: selectedCol !== null ? 'default' : undefined,
                   };
                   // Check if this is the # column (serial number column)
-                  const isSerialCell = typedCell.column && (typedCell.column.id === 'serial' || typedCell.column.accessor === 'serial');
+                  const isSerialCell = (typedCell as any).column && ((typedCell as any).column.id === 'serial' || (typedCell as any).column.accessor === 'serial');
                   // Check if this is the Job Request column (by accessor or header)
-                  const isJobRequestCell = typedCell.column && (typedCell.column.id === 'job_request' || typedCell.column.accessor === 'job_request');
+                  const isJobRequestCell = (typedCell as any).column && ((typedCell as any).column.id === 'job_request' || (typedCell as any).column.accessor === 'job_request');
                   // Check if this is the Submitted column (by accessor or header)
-                  const isSubmittedCell = typedCell.column && (typedCell.column.id === 'submitted' || typedCell.column.accessor === 'submitted');
+                  const isSubmittedCell = (typedCell as any).column && ((typedCell as any).column.id === 'submitted' || (typedCell as any).column.accessor === 'submitted');
                   // Check if this is the Submitter column (by accessor or header)
-                  const isSubmitterCell = typedCell.column && (typedCell.column.id === 'submitter' || typedCell.column.accessor === 'submitter');
+                  const isSubmitterCell = (typedCell as any).column && ((typedCell as any).column.id === 'submitter' || (typedCell as any).column.accessor === 'submitter');
                   // Check if this is the URL column (by accessor or header)
-                  const isUrlCell = typedCell.column && (typedCell.column.id === 'url' || typedCell.column.accessor === 'url');
+                  const isUrlCell = (typedCell as any).column && ((typedCell as any).column.id === 'url' || (typedCell as any).column.accessor === 'url');
                   // Check if this is the Assigned column (by accessor or header)
-                  const isAssignedCell = typedCell.column && (typedCell.column.id === 'assigned' || typedCell.column.accessor === 'assigned');
+                  const isAssignedCell = (typedCell as any).column && ((typedCell as any).column.id === 'assigned' || (typedCell as any).column.accessor === 'assigned');
                   // Check if this is the Due Date column (by accessor or header)
-                  const isDueDateCell = typedCell.column && (typedCell.column.id === 'due_date' || typedCell.column.accessor === 'due_date');
+                  const isDueDateCell = (typedCell as any).column && ((typedCell as any).column.id === 'due_date' || (typedCell as any).column.accessor === 'due_date');
                   // Check if this is the Est. Val column (by accessor or header)
-                  const isEstValCell = typedCell.column && (typedCell.column.id === 'est_val' || typedCell.column.accessor === 'est_val');
+                  const isEstValCell = (typedCell as any).column && ((typedCell as any).column.id === 'est_val' || (typedCell as any).column.accessor === 'est_val');
                   // Check if this is the Priority column (by accessor or header)
-                  const isPriorityCell = typedCell.column && (typedCell.column.id === 'priority' || typedCell.column.accessor === 'priority');
+                  const isPriorityCell = (typedCell as any).column && ((typedCell as any).column.id === 'priority' || (typedCell as any).column.accessor === 'priority');
                   // Check if this is the Status column (by accessor or header)
-                  const isStatusCell = typedCell.column && (typedCell.column.id === 'status' || typedCell.column.accessor === 'status');
+                  const isStatusCell = (typedCell as any).column && ((typedCell as any).column.id === 'status' || (typedCell as any).column.accessor === 'status');
                   return (
                     <td
                       key={key}
@@ -839,7 +842,7 @@ export const BasicTable: React.FC = () => {
                     >
                       {isSerialCell ? (
                         <div className="flex items-center justify-center h-[20px] opacity-100 relative top-[6px] font-sans font-normal not-italic text-[14px] leading-[20px] tracking-[0%] text-center mt-[-8px] text-[var(--Content-Core-contentPrimary,#afafaf)]">
-                          {typedCell.render('Cell')}
+                          {(typedCell as any).render('Cell')}
                         </div>
                       ) : isSubmitterCell ? (
                         <div
@@ -849,7 +852,7 @@ export const BasicTable: React.FC = () => {
                             letterSpacing: '0%',
                           }}
                         >
-                          {typedCell.render('Cell')}
+                          {(typedCell as any).render('Cell')}
                         </div>
                       ) : isUrlCell ? (
                         <div className="flex items-center justify-start w-[108px] h-5 opacity-100 overflow-hidden">
@@ -861,7 +864,7 @@ export const BasicTable: React.FC = () => {
                               textOverflow: 'ellipsis',
                             }}
                           >
-                            {typedCell.render('Cell')}
+                            {(typedCell as any).render('Cell')}
                           </span>
                         </div>
                       ) : isAssignedCell ? (
@@ -872,7 +875,7 @@ export const BasicTable: React.FC = () => {
                             letterSpacing: '0%',
                           }}
                         >
-                          {typedCell.render('Cell')}
+                          {(typedCell as any).render('Cell')}
                         </div>
                       ) : isDueDateCell ? (
                         <div
@@ -882,7 +885,7 @@ export const BasicTable: React.FC = () => {
                             letterSpacing: '0%',
                           }}
                         >
-                          {typedCell.render('Cell')}
+                          {(typedCell as any).render('Cell')}
                         </div>
                       ) : isEstValCell ? (
                         <div className="ml-7">
@@ -893,8 +896,8 @@ export const BasicTable: React.FC = () => {
                               letterSpacing: '0%',
                             }}
                           >
-                            {typedCell.render('Cell')}
-                            {typedCell.value && typedCell.value.toString().trim() !== '' && (
+                            {(typedCell as any).render('Cell')}
+                            {(typedCell as any).value && (typedCell as any).value.toString().trim() !== '' && (
                               <div
                                 className="flex items-center justify-end w-[7px] h-4 opacity-100 ml-1 font-normal not-italic text-[14px] leading-4 tracking-[0%] text-right text-[#AFAFAF]"
                                 style={{
@@ -912,9 +915,9 @@ export const BasicTable: React.FC = () => {
                           className={
                             [
                               "flex items-center justify-center h-4 opacity-100 font-semibold not-italic text-[13px] leading-4 tracking-[0%] text-center",
-                              typedCell.value === "Medium"
+                              (typedCell as any).value === "Medium"
                                 ? "w-[48px] ml-7 text-[#C29210]"
-                                : typedCell.value === "High"
+                                : (typedCell as any).value === "High"
                                   ? "w-[27px] ml-9 text-[#EF4D44]"
                                   : "w-[25px] ml-9 text-[#1A8CFF]"
                             ].join(" ")
@@ -924,18 +927,18 @@ export const BasicTable: React.FC = () => {
                             letterSpacing: '0%',
                           }}
                         >
-                          {typedCell.render('Cell')}
+                          {(typedCell as any).render('Cell')}
                         </div>
                       ) : isStatusCell ? (
-                        typedCell.value && typedCell.value.toString().trim() !== '' ? (
+                        (typedCell as any).value && (typedCell as any).value.toString().trim() !== '' ? (
                           <div
                             className={[
                               "flex items-center justify-center h-5 opacity-100 rounded-full gap-2 pt-1 pr-2 pb-1 pl-2",
-                              typedCell.value === "In-Process"
+                              (typedCell as any).value === "In-Process"
                                 ? "w-[80px] ml-3 bg-[#FFF3D6]"
-                                : typedCell.value === "Need to start"
+                                : (typedCell as any).value === "Need to start"
                                   ? "w-[95px] ml-1 bg-[#E2E8F0]"
-                                  : typedCell.value === "Complete"
+                                  : (typedCell as any).value === "Complete"
                                     ? "w-[73px] ml-4 bg-[#D3F2E3]"
                                     : "w-[63px] ml-5 bg-[#FFE1DE]"
                             ].join(" ")}
@@ -943,11 +946,11 @@ export const BasicTable: React.FC = () => {
                             <span
                               className={[
                                 "flex items-center justify-center font-medium not-italic text-[12px] leading-4 tracking-[0%]",
-                                typedCell.value === "In-Process"
+                                (typedCell as any).value === "In-Process"
                                   ? "w-[64px] h-[14px] text-[#85640B]"
-                                  : typedCell.value === "Need to start"
+                                  : (typedCell as any).value === "Need to start"
                                     ? "w-[79px] h-[14px] text-[#475569]"
-                                    : typedCell.value === "Complete"
+                                    : (typedCell as any).value === "Complete"
                                       ? "w-[57px] h-[14px] text-[#0A6E3D]"
                                       : "w-[47px] h-[14px] text-[#C22219]"
                               ].join(" ")}
@@ -956,7 +959,7 @@ export const BasicTable: React.FC = () => {
                                 letterSpacing: '0%',
                               }}
                             >
-                              {typedCell.render('Cell')}
+                              {(typedCell as any).render('Cell')}
                             </span>
                           </div>
                         ) : (
@@ -970,7 +973,7 @@ export const BasicTable: React.FC = () => {
                               fontFamily: 'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
                             }}
                           >
-                            {typedCell.render('Cell')}
+                            {(typedCell as any).render('Cell')}
                           </span>
                         </div>
                       ) : isSubmittedCell ? (
@@ -990,11 +993,11 @@ export const BasicTable: React.FC = () => {
                           <span
                             className="block w-full pl-5 overflow-hidden whitespace-nowrap text-ellipsis text-right"
                           >
-                            {typedCell.render('Cell')}
+                            {(typedCell as any).render('Cell')}
                           </span>
                         </div>
                       ) : (
-                        typedCell.render('Cell')
+                        (typedCell as any).render('Cell')
                       )}
                     </td>
                   );

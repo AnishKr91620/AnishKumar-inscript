@@ -138,7 +138,7 @@ const Toolbar: React.FC = () => {
       {/* Group Import, Export, Share, and New Action buttons */}
       <div className="w-[459px] h-9 flex items-center gap-2 opacity-100 justify-end">
         <button
-          className="w-[90px] h-9 flex items-center gap-1 bg-none border border-[#EEE] rounded-[6px] border-[1px] cursor-pointer pt-2 pr-3 pb-2 pl-2 text-[14px] opacity-100 ml-[16px] mt-[4px]"
+          className="w-[90px] h-9 flex items-center gap-1 bg-none border-[#EEE] rounded-[6px] border-[1px] cursor-pointer pt-2 pr-3 pb-2 pl-2 text-[14px] opacity-100 ml-[16px] mt-[4px]"
           onClick={() => toast.info('Ready to import your data!', { position: 'top-right' })}
         >
           <div className="w-5 h-5 opacity-100 flex items-center justify-center">

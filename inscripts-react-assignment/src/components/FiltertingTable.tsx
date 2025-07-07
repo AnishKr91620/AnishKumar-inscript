@@ -2,7 +2,7 @@
 import React, { useMemo } from 'react';
 import { useTable, useFilters, useGlobalFilter } from 'react-table';
 import MOCK_DATA from './MOCK_DATA.ts';
-import { COLUMNS } from './columns.ts';
+import { COLUMNS } from './columns';
 import './table.css';
 import { GlobalFilter } from './GlobalFilter';
 import { ColumnFilter } from './ColumnFilter';

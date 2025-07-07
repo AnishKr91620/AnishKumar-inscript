@@ -9,6 +9,6 @@ declare module 'react-table' {
   export const usePagination: unknown;
   export const useRowSelect: unknown;
   export const useColumnOrder: unknown;
-  export const Column: unknown;
+  export type Column<T = any> = {};
   export type TableInstance = unknown;
 } 

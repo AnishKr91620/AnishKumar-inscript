@@ -1,13 +1,25 @@
 // This file uses 'react-table' which may not have type declarations. See project README for details.
 import React, { useMemo } from 'react';
-import { useTable, useColumnOrder, Column, TableInstance } from 'react-table';
-import MOCK_DATA from './MOCK_DATA.ts';
-import { COLUMNS } from './columns.ts';
+import { useTable, useColumnOrder } from 'react-table';
+import type {TableInstance } from 'react-table'; // ✅ type-only import
+import MOCK_DATA from './MOCK_DATA';
+import { COLUMNS } from './columns'; // ✅ no .ts extension
 import './table.css';
 
+
 export const ColumnOrder: React.FC = () => {
-  const columns = useMemo<Column<unknown>[]>(() => COLUMNS, []);
-  const data = useMemo<unknown[]>(() => MOCK_DATA, []);
+  const columns = useMemo(() => COLUMNS, []);
+  const data = useMemo<any[]>(() => MOCK_DATA, []);
+
+  const tableInstance = (useTable as any)(
+    {
+      columns,
+      data,
+    },
+    useColumnOrder
+  ) as TableInstance as any & {
+    setColumnOrder: (order: string[]) => void;
+  };
 
   const {
     getTableProps,
@@ -16,11 +28,7 @@ export const ColumnOrder: React.FC = () => {
     footerGroups,
     rows,
     setColumnOrder
-  }: TableInstance<unknown> & { setColumnOrder: (order: string[]) => void } = useTable({
-    columns,
-    data
-  }, useColumnOrder);
-
+  } = tableInstance;
   const changeOrder = () => {
     setColumnOrder(['id', 'first_name', 'last_name', 'phone', 'country', 'date_of_birth']);
   };

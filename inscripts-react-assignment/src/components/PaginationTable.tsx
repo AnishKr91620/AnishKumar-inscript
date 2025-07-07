@@ -1,14 +1,15 @@
 // This file uses 'react-table' which may not have type declarations. See project README for details.
 import React, { useMemo } from 'react';
-import { useTable, usePagination, Column, TableInstance } from 'react-table';
-import MOCK_DATA from './MOCK_DATA.ts';
-import { COLUMNS } from './columns.ts';
+import { useTable, usePagination } from 'react-table';
+import MOCK_DATA from './MOCK_DATA';
+import { COLUMNS } from './columns';
 import './table.css';
 
 export const PaginationTable: React.FC = () => {
-  const columns = useMemo<Column<unknown>[]>(() => COLUMNS, []);
+  const columns = useMemo(() => COLUMNS, []);
   const data = useMemo<unknown[]>(() => MOCK_DATA, []);
 
+  
   const {
     getTableProps,
     getTableBodyProps,
@@ -23,15 +24,14 @@ export const PaginationTable: React.FC = () => {
     gotoPage,
     pageCount,
     setPageSize
-  }: TableInstance<unknown> & unknown = useTable(
+  } = (useTable as any)(
     {
       columns,
       data,
       initialState: { pageIndex: 2 }
     },
     usePagination
-  );
-
+  ) as any;
   const { pageIndex, pageSize } = state;
 
   return (

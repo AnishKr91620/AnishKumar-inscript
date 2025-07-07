@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAsyncDebounce } from 'react-table';
+import { useAsyncDebounce } from '../utils/useAsyncDebounce';
 
 interface GlobalFilterProps {
   filter: string;
