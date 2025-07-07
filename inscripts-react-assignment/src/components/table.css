@@ -1,0 +1,516 @@
+table {
+  font-family: 'Poppins, Helvetica, sans-serif';
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table td,
+table th {
+  border: 1px solid #f6f6f6;
+  padding: 8px;
+  background: #fff;
+  position: relative;
+  height: 36px !important;
+}
+
+/* Override border for last column - make it more specific */
+table td:last-child,
+table th:last-child,
+.table-container table td:last-child,
+.table-container table th:last-child {
+  border: none !important;
+  border-left: 2px dashed #aaa !important;
+  border-right: 2px dashed #aaa !important;
+  border-top: 1px solid #f6f6f6 !important;
+  border-bottom: 1px solid #f6f6f6 !important;
+}
+
+/* Force dashed borders for last column with maximum specificity */
+div.table-container table tbody tr td:last-child,
+div.table-container table thead tr th:last-child {
+  border-left: 2px dashed #aaa !important;
+  border-right: 2px dashed #aaa !important;
+}
+
+/* Ultimate override for last column borders */
+div.table-container table td:last-child,
+div.table-container table th:last-child {
+  border-left: 2px dashed #aaa !important;
+  border-right: 2px dashed #aaa !important;
+  border-top: 1px solid #f6f6f6 !important;
+  border-bottom: 1px solid #f6f6f6 !important;
+}
+
+/* Additional override for all table elements */
+table td:last-child,
+table th:last-child {
+  border-left: 2px dashed #aaa !important;
+  border-right: 2px dashed #aaa !important;
+}
+
+/* Force override for any table */
+* table td:last-child,
+* table th:last-child {
+  border-left: 2px dashed #aaa !important;
+  border-right: 2px dashed #aaa !important;
+}
+
+/* Remove alternate row color */
+table tr {
+  background-color: #fff;
+}
+
+/* Remove row hover, add cell hover border */
+table td:hover {
+  outline: 2px solid #6c8a76;
+  z-index: 2;
+}
+
+/* Disable hover effect when .no-hover is present */
+table td.no-hover:hover {
+  outline: none !important;
+}
+
+
+
+table th, tfoot td {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: center;
+  background-color: #e5e7eb; /* Tailwind gray-200 */
+  color: #222;
+}
+
+/* Dashed vertical borders for special header row */
+tr.plus-header th {
+  border-left: 2px dashed #aaa;
+  border-right: 2px dashed #aaa;
+  background: #f9fafb;
+  color: #888;
+}
+
+table th, table td {
+  height: 36px !important;
+  padding: 0 !important;
+  line-height: 36px !important;
+  vertical-align: middle !important;
+}
+
+table th:nth-child(1) {
+  text-align: center !important;
+  vertical-align: middle !important;
+  width: 19px !important;
+  color: var(--Content-Core-contentTertiary, #757575) !important;
+  font-family: inherit;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0;
+  height: 20px !important;
+}
+table td:nth-child(1) {
+  text-align: center !important;
+  vertical-align: middle !important;
+  width: 19px !important;
+  background: #fff !important;
+  color: var(--Content-Core-contentTertiary, #757575) !important;
+  font-family: inherit;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0;
+  height: 20px !important;
+}
+table th:nth-child(2) {
+  width: 238px !important;
+  color: var(--Lvl-2-Content, #757575) !important;
+  font-family: 'Poppins, Helvetica, sans-serif';
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  vertical-align: middle !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+table td:nth-child(2) {
+  width: 238px !important;
+  background: #fff !important;
+  color: #121212 !important;
+  font-family: 'Poppins, Helvetica, sans-serif';
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  text-align: right;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+/* Submitted column (3rd column) */
+table th:nth-child(3) {
+  width: 125px !important;
+  color: var(--Lvl-2-Content, #757575) !important;
+  font-family: 'Poppins, Helvetica, sans-serif';
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  vertical-align: middle !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+table td:nth-child(3) {
+  width: 125px !important;
+  background: #fff !important;
+  color: #121212 !important;
+  font-family: 'Poppins, Helvetica, sans-serif';
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  text-align: right;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+/* Status column (4th column) */
+table th:nth-child(4) {
+  width: 130px !important;
+  color: var(--Lvl-2-Content, #757575) !important;
+  font-family: 'Poppins, Helvetica, sans-serif';
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  vertical-align: middle !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+table td:nth-child(4) {
+  width: 130px !important;
+  background: #fff !important;
+  color: #121212 !important;
+  font-family: 'Poppins, Helvetica, sans-serif';
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  text-align: right;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+/* Submitter column (5th column) */
+table th:nth-child(5) {
+  width: 124px !important;
+  color: var(--Lvl-2-Content, #757575) !important;
+  font-family: 'Poppins, Helvetica, sans-serif';
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  vertical-align: middle !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+table td:nth-child(5) {
+  width: 124px !important;
+  background: #fff !important;
+  color: #121212 !important;
+  font-family: 'Poppins, Helvetica, sans-serif';
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  text-align: right;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+table th:nth-child(6) {
+  width: 111px !important;
+  color: var(--Lvl-2-Content, #757575) !important;
+  font-family: 'Poppins, Helvetica, sans-serif';
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  vertical-align: middle !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+table td:nth-child(6) {
+  width: 111px !important;
+  background: #fff !important;
+  color: #121212 !important;
+  font-family: 'Poppins, Helvetica, sans-serif';
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  text-align: right;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+table th:nth-child(8) {
+  width: 119px !important;
+  color: var(--Lvl-2-Content, #757575) !important;
+  font-family: 'Poppins, Helvetica, sans-serif';
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  vertical-align: middle !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+table td:nth-child(8) {
+  width: 119px !important;
+  background: #fff !important;
+  color: #121212 !important;
+  font-family: 'Poppins, Helvetica, sans-serif';
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  text-align: right;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+table th:nth-child(7) {
+  width: 97px !important;
+  color: var(--Lvl-2-Content, #757575) !important;
+  font-family: 'Poppins, Helvetica, sans-serif';
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  vertical-align: middle !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+table td:nth-child(7) {
+  width: 97px !important;
+  background: #fff !important;
+  color: #121212 !important;
+  font-family: 'Poppins, Helvetica, sans-serif';
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  text-align: right;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+table th:nth-child(9) {
+  width: 118px !important;
+  color: var(--Lvl-2-Content, #757575) !important;
+  font-family: 'Poppins, Helvetica, sans-serif';
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  vertical-align: middle !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+table td:nth-child(9) {
+  width: 118px !important;
+  background: #fff !important;
+  color: #121212 !important;
+  font-family: 'Poppins, Helvetica, sans-serif';
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  text-align: right;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+table th:nth-child(10) {
+  width: 114px !important;
+  color: var(--Lvl-2-Content, #757575) !important;
+  font-family: 'Poppins, Helvetica, sans-serif';
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  vertical-align: middle !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+table td:nth-child(10) {
+  width: 114px !important;
+  background: #fff !important;
+  color: #121212 !important;
+  font-family: 'Poppins, Helvetica, sans-serif';
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  text-align: right;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+table th:nth-child(11) {
+  width: 130px !important;
+  color: var(--Lvl-2-Content, #757575) !important;
+  font-family: 'Poppins, Helvetica, sans-serif';
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  vertical-align: middle !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+table td:nth-child(11) {
+  width: 130px !important;
+  background: #fff !important;
+  color: #121212 !important;
+  font-family: 'Poppins, Helvetica, sans-serif';
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  text-align: right;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+table th {
+  font-weight: 600 !important;
+}
+
+.first-parent-header {
+  background: #fff !important;
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+  box-shadow: none !important;
+}
+
+table td {
+  font-family: 'Poppins, Helvetica, sans-serif';
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
+  text-align: right;
+  color: #121212;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+/* Specific URL column width override */
+table th[data-testid*="url"], table td[data-testid*="url"] {
+  width: 94px !important;
+  max-width: 94px !important;
+  min-width: 94px !important;
+}
+
+/* Additional URL column targeting */
+table th:nth-child(6), table td:nth-child(6) {
+  width: 94px !important;
+  max-width: 94px !important;
+  min-width: 94px !important;
+}
+
+/* 2px bottom border for group headers ABC, Answer a question, and Extract */
+table th:has(span > div > span),
+table th:has(span > div[style*='ABC']),
+table th:has(span > div[style*='Answer a question']),
+table th:has(span > div[style*='Extract']) {
+  border-bottom: 1px solid #ebefec !important;
+}
+
+/* Add this at the end of the file */
+.job-request-cell-text {
+  width: 240px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: rgb(0, 0, 0);
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* Hide scrollbars for webkit browsers */
+.table-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbars for Firefox */
+.table-container {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  background: #f6f6f6;
+}
+
+.table-container table {
+  background: #fff;
+  display: inline-table;
+}
+
+/* FINAL OVERRIDE - Last column dashed borders */
+.table-container table td:last-child,
+.table-container table th:last-child,
+table td:last-child,
+table th:last-child {
+  border-left: 2px dashed #aaa !important;
+  border-right: 2px dashed #aaa !important;
+  border-top: 1px solid #f6f6f6 !important;
+  border-bottom: 1px solid #f6f6f6 !important;
+}
+
+/* ULTIMATE SPECIFIC RULE for last column */
+.last-column-dashed table td:last-child,
+.last-column-dashed table th:last-child {
+  border-left: 2px dashed #aaa !important;
+  border-right: 2px dashed #aaa !important;
+  border-top: 1px solid #f6f6f6 !important;
+  border-bottom: 1px solid #f6f6f6 !important;
+}
+
+/* --- Sticky Table Header Fixes (Revised) --- */
+.table-container table {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+.table-container thead {
+  background: #fff !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.table-container thead tr {
+  background: #fff !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-bottom: none !important;
+}
+/* Remove forced white background from th to allow per-header colors */
+.table-container thead th {
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 37px !important;
+  min-height: 37px !important;
+  max-height: 37px !important;
+  box-sizing: border-box;
+  z-index: 10;
+}
+.table-container thead th > * {
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 100% !important;
+  box-sizing: border-box;
+}
+/* If a gap persists, close it with a negative margin */
+.table-container table {
+  margin-top: -1px !important;
+}
+
+/* Make sure the outline is visible above the header's bottom border when hovering the first row */
+tbody tr:first-child td:hover {
+  z-index: 11;
+  position: relative;
+}
