@@ -837,7 +837,7 @@ export const BasicTable: React.FC = () => {
                       key={key}
                       {...restCellProps}
                       style={isJobRequestCell ? { ...tdStyle, padding: 0, overflow: 'hidden' } : tdStyle}
-                      onClick={e => { handleCellClick(); toast.info(`Clicked cell [Row ${rowIdx + 1}, Col ${colIdx + 1}]`, { position: 'top-right' }); }}
+                      onClick={() => { handleCellClick(); toast.info(`Clicked cell [Row ${rowIdx + 1}, Col ${colIdx + 1}]`, { position: 'top-right' }); }}
                       className={selectedCol !== null ? 'no-hover' : ''}
                     >
                       {isSerialCell ? (

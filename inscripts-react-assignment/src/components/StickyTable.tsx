@@ -1,6 +1,7 @@
 // This file uses 'react-table' which may not have type declarations. See project README for details.
 import React, { useMemo } from 'react';
-import { useTable, useBlockLayout, Column, TableInstance } from 'react-table';
+import { useTable, useBlockLayout } from 'react-table';
+import type { Column,} from 'react-table';
 import { useSticky } from 'react-table-sticky';
 import { Styles } from './TableStyles';
 import MOCK_DATA from './MOCK_DATA';
@@ -11,19 +12,20 @@ export const StickyTable: React.FC = () => {
   const columns = useMemo<Column<unknown>[]>(() => COLUMNS, []);
   const data = useMemo<unknown[]>(() => MOCK_DATA, []);
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows
-  }: TableInstance<unknown> & unknown = useTable(
-    {
-      columns,
-      data
-    },
-    useBlockLayout,
-    useSticky
-  );
+  
+const {
+  getTableProps,
+  getTableBodyProps,
+  headerGroups,
+  rows
+} = (useTable as any)(
+  {
+    columns,
+    data
+  },
+  useBlockLayout,
+  useSticky
+) as any;
 
   const firstPageRows = rows.slice(0, 15);
 
