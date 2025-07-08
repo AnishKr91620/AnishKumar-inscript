@@ -345,8 +345,9 @@ export const BasicTable: React.FC = () => {
                           ) : typedColumn.Header === 'Financial overview' ? (
                             <div className="flex items-center gap-1">
                               <div
-                                className="flex items-center justify-center gap-1 w-[188px] h-6 p-1 rounded bg-[#EEEEEE] opacity-100 font-normal text-[14px] ml-[8px]"
+                                className="flex items-center justify-center gap-1 w-[188px] h-6 p-1 rounded bg-[#EEEEEE] opacity-100 font-normal text-[14px] ml-[8px] cursor-pointer"
                                 style={{ fontFamily: 'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"' }}
+                                onClick={() => console.log('Clicked on Q3 financial Overview')}
                               >
                                 <div className="relative w-4 h-4 opacity-100">
                                   <svg
@@ -372,7 +373,8 @@ export const BasicTable: React.FC = () => {
                                 </div>
                                 <span className="mx-[2px]">Q3</span> Financial Overview
                               </div>
-                              <div className="relative w-4 h-4 opacity-100">
+                              <div className="relative w-4 h-4 opacity-100 cursor-pointer"
+                              onClick={() => console.log('Clicked on Refresh')}>
                                 <svg
                                   stroke="currentColor"
                                   fill="currentColor"
