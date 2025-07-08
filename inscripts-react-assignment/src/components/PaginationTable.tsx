@@ -24,14 +24,28 @@ export const PaginationTable: React.FC = () => {
     gotoPage,
     pageCount,
     setPageSize
-  } = (useTable as any)(
+  } = useTable(
     {
       columns,
       data,
       initialState: { pageIndex: 2 }
     },
     usePagination
-  ) as any;
+  ) as {
+    getTableProps: () => Record<string, unknown>;
+    getTableBodyProps: () => Record<string, unknown>;
+    headerGroups: unknown[];
+    page: unknown[];
+    nextPage: () => void;
+    previousPage: () => void;
+    canPreviousPage: boolean;
+    canNextPage: boolean;
+    pageOptions: unknown[];
+    state: { pageIndex: number; pageSize: number };
+    gotoPage: (page: number) => void;
+    pageCount: number;
+    setPageSize: (size: number) => void;
+  };
   const { pageIndex, pageSize } = state;
 
   return (

@@ -10,26 +10,26 @@ export const RowSelection: React.FC = () => {
   const columns = useMemo(() => COLUMNS, []);
   const data = useMemo<unknown[]>(() => MOCK_DATA, []);
 
-  // @ts-expect-error: useTable is of type unknown due to missing types for react-table
-  const tableInstance: any = useTable(
+  
+  const tableInstance = useTable(
     {
       columns,
       data
     },
     useRowSelect,
-    (hooks: any) => {
-      hooks.visibleColumns.push((columns: any[]) => [
+    (hooks: unknown) => {
+      (hooks as { visibleColumns: { push: (cb: (columns: unknown[]) => unknown[]) => void } }).visibleColumns.push((columns: unknown[]) => [
         {
           id: 'selection',
-          Header: ({ getToggleAllRowsSelectedProps }: any) => (
+          Header: ({ getToggleAllRowsSelectedProps }: { getToggleAllRowsSelectedProps: () => Record<string, unknown> }) => (
             <Checkbox {...getToggleAllRowsSelectedProps()} />
           ),
-          Cell: ({ row }: any) => <Checkbox {...row.getToggleRowSelectedProps()} />
+          Cell: ({ row }: { row: { getToggleRowSelectedProps: () => Record<string, unknown> } }) => <Checkbox {...row.getToggleRowSelectedProps()} />
         },
         ...columns
       ]);
     }
-  );
+  ) as unknown;
 
   const {
     getTableProps,
@@ -37,7 +37,13 @@ export const RowSelection: React.FC = () => {
     headerGroups,
     rows,
     selectedFlatRows
-  } = tableInstance;
+  } = tableInstance as {
+    getTableProps: () => Record<string, unknown>;
+    getTableBodyProps: () => Record<string, unknown>;
+    headerGroups: unknown[];
+    rows: unknown[];
+    selectedFlatRows: unknown[];
+  };
 
   const firstPageRows = rows.slice(0, 10);
 

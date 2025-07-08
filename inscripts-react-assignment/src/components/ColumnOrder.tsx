@@ -1,7 +1,6 @@
 // This file uses 'react-table' which may not have type declarations. See project README for details.
 import React, { useMemo } from 'react';
 import { useTable, useColumnOrder } from 'react-table';
-import type {TableInstance } from 'react-table'; // ✅ type-only import
 import MOCK_DATA from './MOCK_DATA';
 import { COLUMNS } from './columns'; // ✅ no .ts extension
 import './table.css';
@@ -9,18 +8,23 @@ import './table.css';
 
 export const ColumnOrder: React.FC = () => {
   const columns = useMemo(() => COLUMNS, []);
-  const data = useMemo<any[]>(() => MOCK_DATA, []);
+  const data = useMemo<unknown[]>(() => MOCK_DATA, []);
 
-  const tableInstance = (useTable as any)(
+  const tableInstance = useTable(
     {
       columns,
       data,
     },
     useColumnOrder
-  ) as TableInstance as any & {
+  ) as {
+    getTableProps: () => Record<string, unknown>;
+    getTableBodyProps: () => Record<string, unknown>;
+    headerGroups: unknown[];
+    footerGroups: unknown[];
+    rows: unknown[];
     setColumnOrder: (order: string[]) => void;
   };
-
+  
   const {
     getTableProps,
     getTableBodyProps,

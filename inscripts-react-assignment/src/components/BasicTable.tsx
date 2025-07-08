@@ -1,6 +1,6 @@
 // This file uses 'react-table' which may not have type declarations. See project README for details.
 import React, { useMemo, useRef, useState } from 'react';
-import { useTable} from 'react-table';
+import { useTable } from 'react-table';
 import type { RowData } from '../types';
 import MOCK_DATA from './MOCK_DATA.ts';
 import { COLUMNS } from './columns.ts';
@@ -40,7 +40,7 @@ export const BasicTable: React.FC = () => {
     return result as RowData[];
   }, []);
 
-  
+
   const columns = useMemo(() => COLUMNS, []);
 
   const {
@@ -49,10 +49,16 @@ export const BasicTable: React.FC = () => {
     headerGroups,
     rows,
     prepareRow
-  } = (useTable as any)({
+  } = useTable({
     columns,
     data
-  });
+  }) as {
+    getTableProps: () => Record<string, unknown>;
+    getTableBodyProps: () => Record<string, unknown>;
+    headerGroups: unknown[];
+    rows: unknown[];
+    prepareRow: (row: unknown) => void;
+  };
 
   // Remove column selection on cell click
   const handleCellClick = () => {
@@ -81,15 +87,15 @@ export const BasicTable: React.FC = () => {
         </colgroup>
         <thead style={{ position: 'sticky', top: 0, zIndex: 10, background: 'white', height: 37, minHeight: 37, maxHeight: 37 }}>
           {headerGroups.map((headerGroup: unknown, groupIdx: number) => {
-            const typedHeaderGroup = headerGroup as unknown;
+            const typedHeaderGroup = headerGroup as { headers: unknown[]; getHeaderGroupProps: () => Record<string, unknown> };
             return (
-              <tr {...(typedHeaderGroup as any).getHeaderGroupProps()}>
-                {(typedHeaderGroup as any).headers.map((column: unknown, colIdx: number) => {
-                  const typedColumn = column as any;
+              <tr {...typedHeaderGroup.getHeaderGroupProps()}>
+                {typedHeaderGroup.headers.map((column: unknown, colIdx: number) => {
+                  const typedColumn = column as { Header?: string; id?: string; width?: number; downArrow?: boolean; render?: (type: string) => React.ReactNode };
 
                   const isSelected = selectedCol === colIdx;
-                  const isResizable = colIdx < (typedHeaderGroup as any).headers.length - 4;
-                  const isLastCol = colIdx === (typedHeaderGroup as any).headers.length - 1;
+                  const isResizable = colIdx < typedHeaderGroup.headers.length - 4;
+                  const isLastCol = colIdx === typedHeaderGroup.headers.length - 1;
                   // Check if this is the Financial overview parent header (contains job request, submitted, status, submitter)
                   const isFinancialOverviewParent = typedColumn.Header === 'Financial overview';
                   // Check if this is the URL parent header (empty header that contains URL column)
@@ -103,7 +109,7 @@ export const BasicTable: React.FC = () => {
                   // Check if this is the blank parent header (empty header that contains blank column)
                   const isBlankParentHeader = typedColumn.Header === '' && typedColumn.id === 'group-blank';
                   // Check if this is one of the individual header cells (job request, submitted, status, submitter)
-                  const isIndividualHeader = ['Job Request', 'submitted', 'status', 'submitter'].includes(typedColumn.Header);
+                  const isIndividualHeader = ['Job Request', 'submitted', 'status', 'submitter'].includes(String(typedColumn.Header));
                   // If this is the first parent header in the first header row, make background white
                   const isFirstParentHeader = groupIdx === 0 && colIdx === 0;
                   // Add bottom border for ABC, Answer a question, Extract
@@ -124,13 +130,13 @@ export const BasicTable: React.FC = () => {
                   if (isFinancialOverviewParent || isBlankParentHeader) {
                     thOnClick = undefined;
                   } else if (isAbcParentHeader) {
-                    thOnClick = () => toast.info('ABC: Grouped for easy access to related columns.', { position: 'top-right' });
+                    thOnClick = () => toast.info(String('ABC: Grouped for easy access to related columns.'), { position: 'top-right' });
                   } else if (isAnswerQuestionParentHeader) {
-                    thOnClick = () => toast.info('Answer a question: Columns for Q&A tasks.', { position: 'top-right' });
+                    thOnClick = () => toast.info(String('Answer a question: Columns for Q&A tasks.'), { position: 'top-right' });
                   } else if (isExtractParentHeader) {
-                    thOnClick = () => toast.info('Extract: Columns for extraction tasks.', { position: 'top-right' });
+                    thOnClick = () => toast.info(String('Extract: Columns for extraction tasks.'), { position: 'top-right' });
                   } else if (isPlusParentHeader) {
-                    thOnClick = () => toast.info('Add new column or action.', { position: 'top-right' });
+                    thOnClick = () => toast.info(String('Add new column or action.'), { position: 'top-right' });
                   }
                   const thStyle = {
                     position: 'relative',
@@ -157,28 +163,32 @@ export const BasicTable: React.FC = () => {
                   };
                   return (
                     <th
-                      key={typedColumn.id || colIdx}
-                      {...typedColumn.getHeaderProps()}
-                      style={{
-                        ...(isFirstParentHeader
-                          ? { ...thStyle, background: '#fff' }
-                          : isFinancialOverviewParent
-                            ? { ...thStyle, background: 'var(--Colours-TrueGrey-200, #E2E2E2)' }
-                            : isUrlParentHeader
-                              ? { ...thStyle, background: 'var(--Background-Core-backgroundPrimary, #FFFFFF)' }
-                              : isAbcParentHeader
-                                ? { ...thStyle, background: '#d2dfd3' }
-                                : isAnswerQuestionParentHeader
-                                  ? { ...thStyle, background: '#dccffb', borderLeft: '2px solid #ebefec', borderRight: '2px solid #ebefec' }
-                                  : isExtractParentHeader
-                                    ? { ...thStyle, background: '#fbc2af' }
-                                    : isBlankParentHeader
-                                      ? { ...thStyle, background: '#eeeeee' }
-                                      : isIndividualHeader
-                                        ? { ...thStyle, background: '#f3f3f3' }
-                                        : thStyle),
-                        ...(isBottomBorderGroup ? { borderBottom: '2px solid #ebefec' } : {})
-                      }}
+                      key={typeof typedColumn.id === 'string' ? typedColumn.id : colIdx.toString()}
+                      {...(typedColumn as { getHeaderProps: () => Record<string, unknown> }).getHeaderProps()}
+                      style={
+                        {
+                          ...(
+                            isFirstParentHeader
+                              ? { ...thStyle, background: '#fff' }
+                              : isFinancialOverviewParent
+                                ? { ...thStyle, background: 'var(--Colours-TrueGrey-200, #E2E2E2)' }
+                                : isUrlParentHeader
+                                  ? { ...thStyle, background: 'var(--Background-Core-backgroundPrimary, #FFFFFF)' }
+                                  : isAbcParentHeader
+                                    ? { ...thStyle, background: '#d2dfd3' }
+                                    : isAnswerQuestionParentHeader
+                                      ? { ...thStyle, background: '#dccffb', borderLeft: '2px solid #ebefec', borderRight: '2px solid #ebefec' }
+                                      : isExtractParentHeader
+                                        ? { ...thStyle, background: '#fbc2af' }
+                                        : isBlankParentHeader
+                                          ? { ...thStyle, background: '#eeeeee' }
+                                          : isIndividualHeader
+                                            ? { ...thStyle, background: '#f3f3f3' }
+                                            : thStyle
+                          ),
+                          ...(isBottomBorderGroup ? { borderBottom: '2px solid #ebefec' } : {})
+                        } as React.CSSProperties
+                      }
                       className={
                         isFirstParentHeader ? 'first-parent-header' :
                           isFinancialOverviewParent ? 'no-hover' :
@@ -230,7 +240,7 @@ export const BasicTable: React.FC = () => {
                                 </div>
                                 <div
                                   className="flex items-center font-semibold not-italic text-[14px] leading-4 tracking-[0%] text-[#757575] mt-0.5 ml-[5px]"
-                                  style={{ transform: 'rotate(0deg)', fontFamily: 'ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"' }}
+                                  style={{ transform: 'rotate(0deg)', fontFamily: 'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"' }}
                                   onClick={e => {
                                     e.stopPropagation();
                                     console.log(`Header 'Job Request' clicked: You can sort or filter this column.`);
@@ -390,7 +400,7 @@ export const BasicTable: React.FC = () => {
                               <div
                                 className="flex items-center font-medium not-italic text-[14px] leading-5 tracking-[0%] text-[#757575] ml-[18px] mt-1 w-[68px] h-4 opacity-100"
                                 style={{
-                                  fontFamily: 'ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"',
+                                  fontFamily: 'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
                                 }}
                               >
                                 {"Submitter"}
@@ -454,7 +464,7 @@ export const BasicTable: React.FC = () => {
                               <div
                                 className="flex items-center font-medium not-italic text-[14px] leading-4 tracking-[0%] text-[#757575] ml-5 mt-1 w-[68px] h-4 opacity-100"
                                 style={{
-                                  fontFamily: 'ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"',
+                                  fontFamily: 'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
                                 }}
                                 onClick={e => {
                                   e.stopPropagation();
@@ -770,7 +780,7 @@ export const BasicTable: React.FC = () => {
                           )}
                         </span>
                         {/* Down arrow except last four columns */}
-                        {(typedColumn as any).downArrow && colIdx < (typedHeaderGroup as any).headers.length - 4 && (
+                        {(typedColumn as { downArrow?: boolean }).downArrow && colIdx < typedHeaderGroup.headers.length - 4 && (
                           <span
                             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', cursor: 'pointer' }}
                             onClick={e => {
@@ -794,47 +804,65 @@ export const BasicTable: React.FC = () => {
             const typedRow = row as unknown;
             prepareRow(typedRow);
             return (
-              <tr {...(typedRow  as any).getRowProps()}>
-                {(typedRow  as any).cells.map((cell: unknown, colIdx: number) => {
+              <tr {...(typedRow as { getRowProps: () => Record<string, unknown> }).getRowProps()}>
+                {(typedRow as { cells: unknown[] }).cells.map((cell: unknown, colIdx: number) => {
                   const typedCell = cell as unknown;
-                  const isLastCol = colIdx === (typedRow  as any).cells.length - 1;
-                  const isColSelected = selectedCol === colIdx;
-                  const cellProps = (typedCell as any).getCellProps();
+                  const cellProps = (typedCell as { getCellProps: () => Record<string, unknown> }).getCellProps();
                   const { key, ...restCellProps } = cellProps;
+                  const rowIndex = (typedRow as { index: number }).index;
+                  const isLastCol = colIdx === (typedRow as { cells: unknown[] }).cells.length - 1;
+                  const isColSelected = selectedCol === colIdx;
+                  const cellForWidth = (typedRow as { cells: unknown[] }).cells[colIdx] as { column: { width?: number } };
+                  let cellWidth = 120;
+                  if (colWidths[colIdx]) {
+                    cellWidth = colWidths[colIdx];
+                  } else if (
+                    cellForWidth &&
+                    typeof cellForWidth === 'object' &&
+                    'column' in cellForWidth &&
+                    cellForWidth.column &&
+                    typeof cellForWidth.column === 'object' &&
+                    'width' in cellForWidth.column &&
+                    typeof cellForWidth.column.width === 'number'
+                  ) {
+                    cellWidth = cellForWidth.column.width;
+                  }
                   const tdStyle = {
-                    background: selectedCol !== null && isColSelected && (typedRow  as any).index !== 0 ? '#e5e7eb' : undefined,
+                    background: selectedCol !== null && isColSelected && rowIndex !== 0 ? '#e5e7eb' : undefined,
                     borderLeft: isLastCol ? '2px dashed #aaa' : (isColSelected ? '2px solid #4b9ce2' : undefined),
                     borderRight: isLastCol ? '2px dashed #aaa' : (isColSelected ? '2px solid #4b9ce2' : undefined),
-                    width: colWidths[colIdx] || (typedRow  as any).cells[colIdx].column.width || 120,
+                    width: cellWidth,
                     height: 32,
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
                     cursor: selectedCol !== null ? 'default' : undefined,
                   };
+                  // Extract column once for all checks
+                  const cellColumn = (typedCell as { column?: { id?: string; accessor?: string } }).column;
                   // Check if this is the # column (serial number column)
-                  const isSerialCell = (typedCell as any).column && ((typedCell as any).column.id === 'serial' || (typedCell as any).column.accessor === 'serial');
+                  const isSerialCell = cellColumn?.id === 'serial' || cellColumn?.accessor === 'serial';
                   // Check if this is the Job Request column (by accessor or header)
-                  const isJobRequestCell = (typedCell as any).column && ((typedCell as any).column.id === 'job_request' || (typedCell as any).column.accessor === 'job_request');
+                  const isJobRequestCell = cellColumn?.id === 'job_request' || cellColumn?.accessor === 'job_request';
                   // Check if this is the Submitted column (by accessor or header)
-                  const isSubmittedCell = (typedCell as any).column && ((typedCell as any).column.id === 'submitted' || (typedCell as any).column.accessor === 'submitted');
+                  const isSubmittedCell = cellColumn?.id === 'submitted' || cellColumn?.accessor === 'submitted';
                   // Check if this is the Submitter column (by accessor or header)
-                  const isSubmitterCell = (typedCell as any).column && ((typedCell as any).column.id === 'submitter' || (typedCell as any).column.accessor === 'submitter');
+                  const isSubmitterCell = cellColumn?.id === 'submitter' || cellColumn?.accessor === 'submitter';
                   // Check if this is the URL column (by accessor or header)
-                  const isUrlCell = (typedCell as any).column && ((typedCell as any).column.id === 'url' || (typedCell as any).column.accessor === 'url');
+                  const isUrlCell = cellColumn?.id === 'url' || cellColumn?.accessor === 'url';
                   // Check if this is the Assigned column (by accessor or header)
-                  const isAssignedCell = (typedCell as any).column && ((typedCell as any).column.id === 'assigned' || (typedCell as any).column.accessor === 'assigned');
+                  const isAssignedCell = cellColumn?.id === 'assigned' || cellColumn?.accessor === 'assigned';
                   // Check if this is the Due Date column (by accessor or header)
-                  const isDueDateCell = (typedCell as any).column && ((typedCell as any).column.id === 'due_date' || (typedCell as any).column.accessor === 'due_date');
+                  const isDueDateCell = cellColumn?.id === 'due_date' || cellColumn?.accessor === 'due_date';
                   // Check if this is the Est. Val column (by accessor or header)
-                  const isEstValCell = (typedCell as any).column && ((typedCell as any).column.id === 'est_val' || (typedCell as any).column.accessor === 'est_val');
+                  const isEstValCell = cellColumn?.id === 'est_val' || cellColumn?.accessor === 'est_val';
                   // Check if this is the Priority column (by accessor or header)
-                  const isPriorityCell = (typedCell as any).column && ((typedCell as any).column.id === 'priority' || (typedCell as any).column.accessor === 'priority');
+                  const isPriorityCell = cellColumn?.id === 'priority' || cellColumn?.accessor === 'priority';
                   // Check if this is the Status column (by accessor or header)
-                  const isStatusCell = (typedCell as any).column && ((typedCell as any).column.id === 'status' || (typedCell as any).column.accessor === 'status');
+                  const isStatusCell = cellColumn?.id === 'status' || cellColumn?.accessor === 'status';
                   return (
                     <td
-                      key={key}
+                      key={typeof key === 'string' ? key : colIdx.toString()}
                       {...restCellProps}
                       style={isJobRequestCell ? { ...tdStyle, padding: 0, overflow: 'hidden' } : tdStyle}
                       onClick={() => { handleCellClick(); toast.info(`Clicked cell [Row ${rowIdx + 1}, Col ${colIdx + 1}]`, { position: 'top-right' }); }}
@@ -842,7 +870,7 @@ export const BasicTable: React.FC = () => {
                     >
                       {isSerialCell ? (
                         <div className="flex items-center justify-center h-[20px] opacity-100 relative top-[6px] font-sans font-normal not-italic text-[14px] leading-[20px] tracking-[0%] text-center mt-[-8px] text-[var(--Content-Core-contentPrimary,#afafaf)]">
-                          {(typedCell as any).render('Cell')}
+                          {(typedCell as { render: (type: string) => React.ReactNode }).render('Cell')}
                         </div>
                       ) : isSubmitterCell ? (
                         <div
@@ -852,19 +880,19 @@ export const BasicTable: React.FC = () => {
                             letterSpacing: '0%',
                           }}
                         >
-                          {(typedCell as any).render('Cell')}
+                          {(typedCell as { render: (type: string) => React.ReactNode }).render('Cell')}
                         </div>
                       ) : isUrlCell ? (
                         <div className="flex items-center justify-start w-[108px] h-5 opacity-100 overflow-hidden">
                           <span
                             className="block font-normal not-italic text-[14px] leading-5 tracking-[0%] text-[#121212] underline underline-solid underline-offset-2 w-[calc(100%+7px)] h-5 pr-[-7px] overflow-hidden whitespace-nowrap"
                             style={{
-                              fontFamily: 'ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"',
+                              fontFamily: 'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
                               letterSpacing: '0%',
                               textOverflow: 'ellipsis',
                             }}
                           >
-                            {(typedCell as any).render('Cell')}
+                            {(typedCell as { render: (type: string) => React.ReactNode }).render('Cell')}
                           </span>
                         </div>
                       ) : isAssignedCell ? (
@@ -875,17 +903,17 @@ export const BasicTable: React.FC = () => {
                             letterSpacing: '0%',
                           }}
                         >
-                          {(typedCell as any).render('Cell')}
+                          {(typedCell as { render: (type: string) => React.ReactNode }).render('Cell')}
                         </div>
                       ) : isDueDateCell ? (
                         <div
                           className="flex items-center justify-end w-[109px] h-4 opacity-100 font-normal not-italic text-[14px] leading-4 tracking-[0%] text-right text-[#121212]"
                           style={{
-                            fontFamily: 'ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"',
+                            fontFamily: 'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
                             letterSpacing: '0%',
                           }}
                         >
-                          {(typedCell as any).render('Cell')}
+                          {(typedCell as { render: (type: string) => React.ReactNode }).render('Cell')}
                         </div>
                       ) : isEstValCell ? (
                         <div className="ml-7">
@@ -896,18 +924,21 @@ export const BasicTable: React.FC = () => {
                               letterSpacing: '0%',
                             }}
                           >
-                            {(typedCell as any).render('Cell')}
-                            {(typedCell as any).value && (typedCell as any).value.toString().trim() !== '' && (
-                              <div
-                                className="flex items-center justify-end w-[7px] h-4 opacity-100 ml-1 font-normal not-italic text-[14px] leading-4 tracking-[0%] text-right text-[#AFAFAF]"
-                                style={{
-                                  fontFamily: 'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
-                                  letterSpacing: '0%',
-                                }}
-                              >
-                                ₹
-                              </div>
-                            )}
+                            {((typedCell as { render: (type: string) => unknown }).render('Cell')) as React.ReactNode}
+                            {(() => {
+                              const value = (typedCell as { value?: unknown }).value;
+                              return value !== undefined && value !== null && String(value).trim() !== '';
+                            })() && (
+                                <div
+                                  className="flex items-center justify-end w-[7px] h-4 opacity-100 ml-1 font-normal not-italic text-[14px] leading-4 tracking-[0%] text-right text-[#AFAFAF]"
+                                  style={{
+                                    fontFamily: 'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
+                                    letterSpacing: '0%',
+                                  }}
+                                >
+                                  ₹
+                                </div>
+                              )}
                           </div>
                         </div>
                       ) : isPriorityCell ? (
@@ -915,9 +946,9 @@ export const BasicTable: React.FC = () => {
                           className={
                             [
                               "flex items-center justify-center h-4 opacity-100 font-semibold not-italic text-[13px] leading-4 tracking-[0%] text-center",
-                              (typedCell as any).value === "Medium"
+                              (typedCell as { value?: unknown }).value === "Medium"
                                 ? "w-[48px] ml-7 text-[#C29210]"
-                                : (typedCell as any).value === "High"
+                                : (typedCell as { value?: unknown }).value === "High"
                                   ? "w-[27px] ml-9 text-[#EF4D44]"
                                   : "w-[25px] ml-9 text-[#1A8CFF]"
                             ].join(" ")
@@ -927,18 +958,21 @@ export const BasicTable: React.FC = () => {
                             letterSpacing: '0%',
                           }}
                         >
-                          {(typedCell as any).render('Cell')}
+                          {(typedCell as { render: (type: string) => React.ReactNode }).render('Cell')}
                         </div>
                       ) : isStatusCell ? (
-                        (typedCell as any).value && (typedCell as any).value.toString().trim() !== '' ? (
+                        (() => {
+                          const value = (typedCell as { value?: unknown }).value;
+                          return value !== undefined && value !== null && String(value).trim() !== '';
+                        })() ? (
                           <div
                             className={[
                               "flex items-center justify-center h-5 opacity-100 rounded-full gap-2 pt-1 pr-2 pb-1 pl-2",
-                              (typedCell as any).value === "In-Process"
+                              (typedCell as { value?: unknown }).value === "In-Process"
                                 ? "w-[80px] ml-3 bg-[#FFF3D6]"
-                                : (typedCell as any).value === "Need to start"
+                                : (typedCell as { value?: unknown }).value === "Need to start"
                                   ? "w-[95px] ml-1 bg-[#E2E8F0]"
-                                  : (typedCell as any).value === "Complete"
+                                  : (typedCell as { value?: unknown }).value === "Complete"
                                     ? "w-[73px] ml-4 bg-[#D3F2E3]"
                                     : "w-[63px] ml-5 bg-[#FFE1DE]"
                             ].join(" ")}
@@ -946,11 +980,11 @@ export const BasicTable: React.FC = () => {
                             <span
                               className={[
                                 "flex items-center justify-center font-medium not-italic text-[12px] leading-4 tracking-[0%]",
-                                (typedCell as any).value === "In-Process"
+                                (typedCell as { value?: unknown }).value === "In-Process"
                                   ? "w-[64px] h-[14px] text-[#85640B]"
-                                  : (typedCell as any).value === "Need to start"
+                                  : (typedCell as { value?: unknown }).value === "Need to start"
                                     ? "w-[79px] h-[14px] text-[#475569]"
-                                    : (typedCell as any).value === "Complete"
+                                    : (typedCell as { value?: unknown }).value === "Complete"
                                       ? "w-[57px] h-[14px] text-[#0A6E3D]"
                                       : "w-[47px] h-[14px] text-[#C22219]"
                               ].join(" ")}
@@ -959,7 +993,7 @@ export const BasicTable: React.FC = () => {
                                 letterSpacing: '0%',
                               }}
                             >
-                              {(typedCell as any).render('Cell')}
+                              {(typedCell as { render: (type: string) => React.ReactNode }).render('Cell')}
                             </span>
                           </div>
                         ) : (
@@ -973,7 +1007,7 @@ export const BasicTable: React.FC = () => {
                               fontFamily: 'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
                             }}
                           >
-                            {(typedCell as any).render('Cell')}
+                            {(typedCell as { render: (type: string) => React.ReactNode }).render('Cell')}
                           </span>
                         </div>
                       ) : isSubmittedCell ? (
@@ -993,11 +1027,11 @@ export const BasicTable: React.FC = () => {
                           <span
                             className="block w-full pl-5 overflow-hidden whitespace-nowrap text-ellipsis text-right"
                           >
-                            {(typedCell as any).render('Cell')}
+                            {(typedCell as { render: (type: string) => React.ReactNode }).render('Cell')}
                           </span>
                         </div>
                       ) : (
-                        (typedCell as any).render('Cell')
+                        ((typedCell as { render: (type: string) => unknown }).render('Cell')) as React.ReactNode
                       )}
                     </td>
                   );

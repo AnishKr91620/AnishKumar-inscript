@@ -14,13 +14,13 @@ export interface DataRow {
   blank: string;
 }
 
-export interface CustomColumn<T = unknown> extends Column<T> {
+export interface CustomColumn extends Column {
   Header?: string;
   width?: number;
   accessor?: string;
 }
 
-export const COLUMNS: Column<DataRow>[] = [
+export const COLUMNS: Column[] = [
   {
     Header: '#',
     accessor: 'serial',
@@ -125,7 +125,7 @@ export const COLUMNS: Column<DataRow>[] = [
   },
 ];
 
-export const GROUPED_COLUMNS: Column<DataRow>[] = [
+export const GROUPED_COLUMNS: Column[] = [
   {
     Header: 'Id',
     Footer: 'Id',

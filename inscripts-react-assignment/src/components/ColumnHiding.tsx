@@ -10,11 +10,18 @@ export const ColumnHiding: React.FC = () => {
   const columns = useMemo(() => COLUMNS, []);
   const data = useMemo<unknown[]>(() => MOCK_DATA, []);
 
-  // @ts-expect-error: useTable is of type unknown due to missing types for react-table
-  const tableInstance: any = useTable({
+  const tableInstance = useTable({
     columns,
     data
-  });
+  }) as {
+    getTableProps: () => Record<string, unknown>;
+    getTableBodyProps: () => Record<string, unknown>;
+    headerGroups: unknown[];
+    footerGroups: unknown[];
+    rows: unknown[];
+    allColumns: unknown[];
+    getToggleHideAllColumnsProps: () => Record<string, unknown>;
+  };
 
   const {
     getTableProps,

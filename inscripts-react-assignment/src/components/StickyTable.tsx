@@ -9,23 +9,28 @@ import { COLUMNS } from './columns';
 import './table.css';
 
 export const StickyTable: React.FC = () => {
-  const columns = useMemo<Column<unknown>[]>(() => COLUMNS, []);
+  const columns = useMemo<Column[]>(() => COLUMNS, []);
   const data = useMemo<unknown[]>(() => MOCK_DATA, []);
 
   
-const {
-  getTableProps,
-  getTableBodyProps,
-  headerGroups,
-  rows
-} = (useTable as any)(
-  {
-    columns,
-    data
-  },
-  useBlockLayout,
-  useSticky
-) as any;
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows
+  } = useTable(
+    {
+      columns,
+      data
+    },
+    useBlockLayout,
+    useSticky
+  ) as {
+    getTableProps: () => Record<string, unknown>;
+    getTableBodyProps: () => Record<string, unknown>;
+    headerGroups: unknown[];
+    rows: unknown[];
+  };
 
   const firstPageRows = rows.slice(0, 15);
 

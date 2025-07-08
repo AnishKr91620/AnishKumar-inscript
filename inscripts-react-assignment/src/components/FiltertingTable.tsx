@@ -18,8 +18,8 @@ export const FilteringTable: React.FC = () => {
     []
   );
 
-  // @ts-expect-error: useTable is of type unknown due to missing types for react-table
-  const tableInstance: any = useTable(
+  
+  const tableInstance = useTable(
     {
       columns,
       data,
@@ -27,8 +27,8 @@ export const FilteringTable: React.FC = () => {
     },
     useFilters,
     useGlobalFilter
-  );
-
+  ) as unknown;
+  
   const {
     getTableProps,
     getTableBodyProps,
@@ -37,7 +37,15 @@ export const FilteringTable: React.FC = () => {
     rows,
     state,
     setGlobalFilter
-  } = tableInstance;
+  } = tableInstance as {
+    getTableProps: () => Record<string, unknown>;
+    getTableBodyProps: () => Record<string, unknown>;
+    headerGroups: unknown[];
+    footerGroups: unknown[];
+    rows: unknown[];
+    state: { globalFilter: string };
+    setGlobalFilter: (filter: string | undefined) => void;
+  };
 
   const { globalFilter } = state;
 

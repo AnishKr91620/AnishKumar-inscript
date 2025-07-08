@@ -9,14 +9,14 @@ export const SortingTable: React.FC = () => {
   const columns = useMemo(() => COLUMNS, []);
   const data = useMemo<unknown[]>(() => MOCK_DATA, []);
 
-  // @ts-expect-error: useTable is of type unknown due to missing types for react-table
-  const tableInstance: any = useTable(
+  
+  const tableInstance = useTable(
     {
       columns,
       data
     },
     useSortBy
-  );
+  ) as unknown;
 
   const {
     getTableProps,
@@ -24,7 +24,13 @@ export const SortingTable: React.FC = () => {
     headerGroups,
     footerGroups,
     rows
-  } = tableInstance;
+  } = tableInstance as {
+    getTableProps: () => Record<string, unknown>;
+    getTableBodyProps: () => Record<string, unknown>;
+    headerGroups: unknown[];
+    footerGroups: unknown[];
+    rows: unknown[];
+  };
 
   return (
     <>
