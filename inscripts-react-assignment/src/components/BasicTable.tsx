@@ -135,27 +135,18 @@ export const BasicTable: React.FC = () => {
       className="table-container last-column-dashed w-full h-screen overflow-y-auto overflow-x-hidden"
     >
       <table {...getTableProps()}>
-        <colgroup>
-          <col /> {/* # */}
-          <col /> {/* Job Request */}
-          <col /> {/* submitted */}
-          <col /> {/* status */}
-          <col /> {/* submitter */}
-          <col style={{ width: 94 }} /> {/* URL */}
-          <col /> {/* Assigned */}
-          <col /> {/* Priority */}
-          <col /> {/* Due Date */}
-          <col /> {/* Est. Val */}
-          <col style={{ width: 114 }} /> {/* blank */}
-          <col style={{ width: 20 }} /> {/* right-side blank space */}
-        </colgroup>
+        <colgroup><col /><col /><col /><col /><col /><col style={{ width: 94 }} /><col /><col /><col /><col /><col style={{ width: 114 }} /><col style={{ width: 20 }} /></colgroup>
         <thead style={{ position: 'sticky', top: 0, zIndex: 10, background: 'white', height: 37, minHeight: 37, maxHeight: 37 }}>
           {headerGroups.map((headerGroup: unknown, groupIdx: number) => {
             const typedHeaderGroup = headerGroup as { headers: unknown[]; getHeaderGroupProps: () => Record<string, unknown> };
+            // Destructure key from headerGroup props
+            const { key: headerGroupKey, ...headerGroupProps } = typedHeaderGroup.getHeaderGroupProps();
             return (
-              <tr {...typedHeaderGroup.getHeaderGroupProps()}>
+              <tr key={(typeof headerGroupKey === 'string' || typeof headerGroupKey === 'number') ? headerGroupKey : groupIdx} {...headerGroupProps}>
                 {typedHeaderGroup.headers.map((column: unknown, colIdx: number) => {
                   const typedColumn = column as { Header?: string; id?: string; width?: number; downArrow?: boolean; render?: (type: string) => React.ReactNode };
+                  // Destructure key from header props
+                  const { key: headerKey, ...headerProps } = (typedColumn as { getHeaderProps: () => Record<string, unknown> }).getHeaderProps();
 
                   const isSelected = selectedCol === colIdx;
                   const isResizable = colIdx < typedHeaderGroup.headers.length - 4;
@@ -227,8 +218,8 @@ export const BasicTable: React.FC = () => {
                   };
                   return (
                     <th
-                      key={typeof typedColumn.id === 'string' ? typedColumn.id : colIdx.toString()}
-                      {...(typedColumn as { getHeaderProps: () => Record<string, unknown> }).getHeaderProps()}
+                      key={(typeof headerKey === 'string' || typeof headerKey === 'number') ? headerKey : (typeof typedColumn.id === 'string' ? typedColumn.id : colIdx)}
+                      {...headerProps}
                       style={
                         {
                           ...(
@@ -263,11 +254,13 @@ export const BasicTable: React.FC = () => {
                     >
                       <span style={{ position: 'relative', paddingRight: isResizable ? 18 : 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 37 }}>
                         <span style={{ flex: 1, textAlign: 'left' }}>
-                          {typedColumn.Header === '#' ? (
+                          {typeof typedColumn.Header === 'function' ? (
+                            (typedColumn.Header as () => React.ReactNode)()
+                          ) : typedColumn.Header === '#' ? (
                             <div className="flex items-center justify-center gap-1 opacity-100 ml-[-14px]">
                               <div
                                 className="flex items-center opacity-100 font-normal not-italic text-[18px] leading-5 tracking-[0%] text-[#d2d2d2] mt-0.5 ml-3"
-                                style={{ transform: 'rotate(0deg)', fontFamily: 'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"' }}
+                                style={{ transform: 'rotate(0deg)', fontFamily: 'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji","Segoe UI Symbol", "Noto Color Emoji"' }}
                                 onClick={e => {
                                   e.stopPropagation();
                                   console.log(`Header '#' clicked: You can sort or filter this column.`);
@@ -869,12 +862,14 @@ export const BasicTable: React.FC = () => {
           {rows.slice(0, 25).map((row: unknown, rowIdx: number) => {
             const typedRow = row as unknown;
             prepareRow(typedRow);
+            // Destructure key from row props
+            const { key: rowKey, ...rowProps } = (typedRow as { getRowProps: () => Record<string, unknown> }).getRowProps();
             return (
-              <tr {...(typedRow as { getRowProps: () => Record<string, unknown> }).getRowProps()}>
+              <tr key={(typeof rowKey === 'string' || typeof rowKey === 'number') ? rowKey : rowIdx} {...rowProps}>
                 {(typedRow as { cells: unknown[] }).cells.map((cell: unknown, colIdx: number) => {
                   const typedCell = cell as unknown;
                   const cellProps = (typedCell as { getCellProps: () => Record<string, unknown> }).getCellProps();
-                  const { key, ...restCellProps } = cellProps;
+                  const { key: cellKey, ...restCellProps } = cellProps;
                   const rowIndex = (typedRow as { index: number }).index;
                   const isLastCol = colIdx === (typedRow as { cells: unknown[] }).cells.length - 1;
                   const isColSelected = selectedCol === colIdx;
@@ -930,7 +925,7 @@ export const BasicTable: React.FC = () => {
                   const isCellSelected = selectedCell?.row === rowIdx && selectedCell?.col === colIdx;
                   return (
                     <td
-                      key={typeof key === 'string' ? key : colIdx.toString()}
+                      key={(typeof cellKey === 'string' || typeof cellKey === 'number') ? cellKey : colIdx}
                       {...restCellProps}
                       tabIndex={0}
                       ref={isCellSelected ? selectedCellRef : null}
