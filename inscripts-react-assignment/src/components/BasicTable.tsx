@@ -1,5 +1,5 @@
 // This file uses 'react-table' which may not have type declarations. See project README for details.
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
 import { useTable } from 'react-table';
 import type { RowData } from '../types';
 import MOCK_DATA from './MOCK_DATA.ts';
@@ -25,6 +25,16 @@ export const BasicTable: React.FC = () => {
   const tableRef = useRef<HTMLDivElement>(null);
   const ROWS = 50;
 
+  // Keyboard navigation state
+  const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null);
+  const selectedCellRef = useRef<HTMLTableCellElement>(null);
+
+  useEffect(() => {
+    if (selectedCellRef.current) {
+      selectedCellRef.current.focus({ preventScroll: true });
+    }
+  }, [selectedCell]);
+
   // Data: fill up to ROWS, blank after MOCK_DATA
   const data = useMemo<RowData[]>(() => {
     const base = MOCK_DATA;
@@ -40,7 +50,7 @@ export const BasicTable: React.FC = () => {
     return result as RowData[];
   }, []);
 
-
+  
   const columns = useMemo(() => COLUMNS, []);
 
   const {
@@ -61,8 +71,62 @@ export const BasicTable: React.FC = () => {
   };
 
   // Remove column selection on cell click
-  const handleCellClick = () => {
-    setSelectedCol(null);
+ 
+
+  // Keyboard navigation handler
+  const handleCellKeyDown = (
+    e: React.KeyboardEvent<HTMLTableCellElement>,
+    _rowIdx: number,
+    _colIdx: number,
+    rowsLength: number,
+    colsLength: number
+  ) => {
+    if (!selectedCell) return;
+    const { row, col } = selectedCell;
+    let newRow = row;
+    let newCol = col;
+    if (e.key === 'ArrowDown') {
+      newRow = Math.min(row + 1, rowsLength - 1);
+      setSelectedCell({ row: newRow, col });
+      e.preventDefault();
+    }
+    if (e.key === 'ArrowUp') {
+      newRow = Math.max(row - 1, 0);
+      setSelectedCell({ row: newRow, col });
+      e.preventDefault();
+    }
+    if (e.key === 'ArrowRight') {
+      if (col === colsLength - 2) {
+        toast.info('You are at the last editable column. Cannot move right.', { position: 'top-right' });
+        e.preventDefault();
+        return;
+      }
+      newCol = Math.min(col + 1, colsLength - 2);
+      setSelectedCell({ row, col: newCol });
+      e.preventDefault();
+    }
+    if (e.key === 'ArrowLeft') {
+      if (col === 1) {
+        toast.info('You are at the first editable column. Cannot move left.', { position: 'top-right' });
+        e.preventDefault();
+        return;
+      }
+      newCol = Math.max(col - 1, 1);
+      setSelectedCell({ row, col: newCol });
+      e.preventDefault();
+    }
+    // Log info after move
+    if (["ArrowDown", "ArrowUp", "ArrowRight", "ArrowLeft"].includes(e.key)) {
+      // Get column header if possible
+      let header = '';
+      if (headerGroups && headerGroups[0] && (headerGroups[0] as { headers: unknown[] }).headers) {
+        const headers = (headerGroups[0] as { headers: Array<{ Header?: string }> }).headers;
+        if (headers[newCol] && typeof headers[newCol] === 'object' && 'Header' in headers[newCol]) {
+          header = (headers[newCol] as { Header?: string }).Header || '';
+        }
+      }
+      console.log(`Moved to cell at row ${newRow}, col ${newCol}${header ? ` (Header: ${header})` : ''}`);
+    }
   };
 
   return (
@@ -169,24 +233,24 @@ export const BasicTable: React.FC = () => {
                         {
                           ...(
                             isFirstParentHeader
-                              ? { ...thStyle, background: '#fff' }
-                              : isFinancialOverviewParent
-                                ? { ...thStyle, background: 'var(--Colours-TrueGrey-200, #E2E2E2)' }
-                                : isUrlParentHeader
-                                  ? { ...thStyle, background: 'var(--Background-Core-backgroundPrimary, #FFFFFF)' }
-                                  : isAbcParentHeader
-                                    ? { ...thStyle, background: '#d2dfd3' }
-                                    : isAnswerQuestionParentHeader
-                                      ? { ...thStyle, background: '#dccffb', borderLeft: '2px solid #ebefec', borderRight: '2px solid #ebefec' }
-                                      : isExtractParentHeader
-                                        ? { ...thStyle, background: '#fbc2af' }
-                                        : isBlankParentHeader
-                                          ? { ...thStyle, background: '#eeeeee' }
-                                          : isIndividualHeader
-                                            ? { ...thStyle, background: '#f3f3f3' }
+                          ? { ...thStyle, background: '#fff' }
+                          : isFinancialOverviewParent
+                            ? { ...thStyle, background: 'var(--Colours-TrueGrey-200, #E2E2E2)' }
+                            : isUrlParentHeader
+                              ? { ...thStyle, background: 'var(--Background-Core-backgroundPrimary, #FFFFFF)' }
+                              : isAbcParentHeader
+                                ? { ...thStyle, background: '#d2dfd3' }
+                                : isAnswerQuestionParentHeader
+                                  ? { ...thStyle, background: '#dccffb', borderLeft: '2px solid #ebefec', borderRight: '2px solid #ebefec' }
+                                  : isExtractParentHeader
+                                    ? { ...thStyle, background: '#fbc2af' }
+                                    : isBlankParentHeader
+                                      ? { ...thStyle, background: '#eeeeee' }
+                                      : isIndividualHeader
+                                        ? { ...thStyle, background: '#f3f3f3' }
                                             : thStyle
                           ),
-                          ...(isBottomBorderGroup ? { borderBottom: '2px solid #ebefec' } : {})
+                        ...(isBottomBorderGroup ? { borderBottom: '2px solid #ebefec' } : {})
                         } as React.CSSProperties
                       }
                       className={
@@ -860,13 +924,27 @@ export const BasicTable: React.FC = () => {
                   const isPriorityCell = cellColumn?.id === 'priority' || cellColumn?.accessor === 'priority';
                   // Check if this is the Status column (by accessor or header)
                   const isStatusCell = cellColumn?.id === 'status' || cellColumn?.accessor === 'status';
+                  // Keyboard navigation: is this cell selected?
+                  const isCellSelected = selectedCell?.row === rowIdx && selectedCell?.col === colIdx;
                   return (
                     <td
                       key={typeof key === 'string' ? key : colIdx.toString()}
                       {...restCellProps}
-                      style={isJobRequestCell ? { ...tdStyle, padding: 0, overflow: 'hidden' } : tdStyle}
-                      onClick={() => { handleCellClick(); toast.info(`Clicked cell [Row ${rowIdx + 1}, Col ${colIdx + 1}]`, { position: 'top-right' }); }}
-                      className={selectedCol !== null ? 'no-hover' : ''}
+                      tabIndex={0}
+                      ref={isCellSelected ? selectedCellRef : null}
+                      onClick={() => {
+                        setSelectedCell({ row: rowIdx, col: colIdx });
+                        setSelectedCol(null); // Unselect the previously clicked cell
+                      }}
+                      onKeyDown={e => handleCellKeyDown(
+                        e,
+                        rowIdx,
+                        colIdx,
+                        rows.slice(0, 25).length,
+                        (typedRow as { cells: unknown[] }).cells.length
+                      )}
+                      style={tdStyle}
+                      className={isCellSelected ? 'selected-cell' : ''}
                     >
                       {isSerialCell ? (
                         <div className="flex items-center justify-center h-[20px] opacity-100 relative top-[6px] font-sans font-normal not-italic text-[14px] leading-[20px] tracking-[0%] text-center mt-[-8px] text-[var(--Content-Core-contentPrimary,#afafaf)]">
@@ -929,16 +1007,16 @@ export const BasicTable: React.FC = () => {
                               const value = (typedCell as { value?: unknown }).value;
                               return value !== undefined && value !== null && String(value).trim() !== '';
                             })() && (
-                                <div
-                                  className="flex items-center justify-end w-[7px] h-4 opacity-100 ml-1 font-normal not-italic text-[14px] leading-4 tracking-[0%] text-right text-[#AFAFAF]"
-                                  style={{
-                                    fontFamily: 'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
-                                    letterSpacing: '0%',
-                                  }}
-                                >
-                                  ₹
-                                </div>
-                              )}
+                              <div
+                                className="flex items-center justify-end w-[7px] h-4 opacity-100 ml-1 font-normal not-italic text-[14px] leading-4 tracking-[0%] text-right text-[#AFAFAF]"
+                                style={{
+                                  fontFamily: 'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
+                                  letterSpacing: '0%',
+                                }}
+                              >
+                                ₹
+                              </div>
+                            )}
                           </div>
                         </div>
                       ) : isPriorityCell ? (

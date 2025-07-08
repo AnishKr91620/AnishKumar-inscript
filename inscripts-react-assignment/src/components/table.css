@@ -60,18 +60,16 @@ table tr {
   background-color: #fff;
 }
 
-/* Remove row hover, add cell hover border */
-table td:hover {
-  outline: 2px solid #6c8a76;
+/*
+.selected-cell {
+  outline: 2px solid #4b9ce2 !important;
   z-index: 2;
 }
-
-/* Disable hover effect when .no-hover is present */
-table td.no-hover:hover {
-  outline: none !important;
+*/
+.selected-cell {
+  outline: 2px solid #6c8a76 !important;
+  z-index: 2;
 }
-
-
 
 table th, tfoot td {
   padding-top: 12px;
